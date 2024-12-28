@@ -12,17 +12,20 @@ is_streaming = False
 stream_start_time = None
 total_streamed_hours = 0
 last_update_time = None
+previous_total = 0  # Add this to track previous total
 
 
 # Helper function to read time data from file
 def load_stream_time():
-    global total_streamed_hours
+    global total_streamed_hours, previous_total
     try:
         with open(TIME_FILE, "r") as f:
             data = json.load(f)
             total_streamed_hours = data.get("currentHours", 0)
+            previous_total = total_streamed_hours  # Remember the previous total
     except FileNotFoundError:
         total_streamed_hours = 0
+        previous_total = 0
 
 
 # Helper function to save time data to file
@@ -55,12 +58,13 @@ def update_stream_time():
         streamed_duration = current_time - stream_start_time
         current_session_hours = streamed_duration.total_seconds() / 3600
 
-        log_with_timestamp(f"Session duration: {streamed_duration}")
-        log_with_timestamp(f"Current session hours: {current_session_hours}")
-        log_with_timestamp(f"Stream time: {format_time(current_session_hours)}")
+        # Add current session to previous total
+        total_streamed_hours = previous_total + current_session_hours
 
-        # Just save the current session time
-        total_streamed_hours = current_session_hours
+        log_with_timestamp(f"Previous total: {format_time(previous_total)}")
+        log_with_timestamp(f"Session duration: {streamed_duration}")
+        log_with_timestamp(f"Total time: {format_time(total_streamed_hours)}")
+
         save_stream_time()
     else:
         log_with_timestamp("Streaming not active or start time not set")
@@ -100,21 +104,23 @@ def on_event(event):
     elif event == obs.OBS_FRONTEND_EVENT_STREAMING_STOPPED:
         log_with_timestamp("Detected Streaming Stopped")
         if is_streaming:
-            is_streaming = False
-            stream_start_time = None
-            obs.timer_remove(
-                update_stream_time
-            )  # Remove the timer when streaming stops
+            # First remove the timer
+            obs.timer_remove(update_stream_time)
             log_with_timestamp("Timer removed as streaming stopped")
-            update_stream_time()  # Update the stream time one last time
-            save_stream_time()  # Save final time to JSON when streaming stops
-            log_with_timestamp("Timer removed for update_stream_time")
 
-            # Format and log the total streamed time
+            # Then do the final update while streaming is still active
+            update_stream_time()  # Update the stream time one last time
+            save_stream_time()  # Save final time to JSON
+
+            # Format and log the final time while streaming is still active
             formatted_time = format_time(total_streamed_hours)
             log_with_timestamp(
                 f"Streaming stopped! Total streamed: {formatted_time}/{500}h."
             )
+
+            # Finally, update the streaming state
+            is_streaming = False
+            stream_start_time = None
 
 
 # Script defaults (required by OBS)
