@@ -40,32 +40,37 @@ def format_time(total_hours):
     return f"{hours}h{minutes}m{seconds}s"
 
 
+def log_with_timestamp(message):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    obs.script_log(obs.LOG_INFO, f"[{timestamp}] {message}")
+
+
 # Function to update the stream time regularly (every minute)
 def update_stream_time():
     global total_streamed_hours, last_update_time
-    obs.script_log(
-        obs.LOG_INFO, "update_stream_time called"
-    )  # Log when function is called
+    log_with_timestamp("update_stream_time called")  # Log when function is called
     if is_streaming and stream_start_time:
         current_time = datetime.now()
+        log_with_timestamp(f"Current time: {current_time}")  # Log current time
         if last_update_time is None:
             last_update_time = stream_start_time
+        log_with_timestamp(
+            f"Last update time: {last_update_time}"
+        )  # Log last update time
         streamed_duration = current_time - last_update_time
         streamed_hours = streamed_duration.total_seconds() / 3600
-        obs.script_log(
-            obs.LOG_INFO,
-            f"Streamed duration: {streamed_duration}, Streamed hours: {streamed_hours}",
+        log_with_timestamp(
+            f"Streamed duration: {streamed_duration}, Streamed hours: {streamed_hours}"
         )  # Log streamed duration and hours
         total_streamed_hours += streamed_hours
         last_update_time = current_time  # Update the last update time
         save_stream_time()  # Save the updated time to the JSON file
-        obs.script_log(
-            obs.LOG_INFO,
-            f"Stream time updated: {format_time(total_streamed_hours)} / 500h",
+        log_with_timestamp(
+            f"Stream time updated: {format_time(total_streamed_hours)} / 500h"
         )
     else:
-        obs.script_log(
-            obs.LOG_INFO, "Streaming not active or start time not set"
+        log_with_timestamp(
+            "Streaming not active or start time not set"
         )  # Log if conditions are not met
 
 
@@ -73,10 +78,10 @@ def update_stream_time():
 def on_event(event):
     global is_streaming, stream_start_time, total_streamed_hours, last_update_time
 
-    obs.script_log(obs.LOG_INFO, f"Event detected: {event}")
+    log_with_timestamp(f"Event detected: {event}")
 
     if event == obs.OBS_FRONTEND_EVENT_STREAMING_STARTED:
-        obs.script_log(obs.LOG_INFO, "Detected Streaming Started")
+        log_with_timestamp("Detected Streaming Started")
         if not is_streaming:
             is_streaming = True
             stream_start_time = datetime.now()
@@ -85,10 +90,10 @@ def on_event(event):
                 update_stream_time,
                 10000,  # Set the timer to call update_stream_time every 10 seconds
             )
-            obs.script_log(obs.LOG_INFO, "Timer added for update_stream_time")
+            log_with_timestamp("Timer added for update_stream_time")
 
     elif event == obs.OBS_FRONTEND_EVENT_STREAMING_STOPPED:
-        obs.script_log(obs.LOG_INFO, "Detected Streaming Stopped")
+        log_with_timestamp("Detected Streaming Stopped")
         if is_streaming:
             is_streaming = False
             obs.timer_remove(
@@ -96,13 +101,12 @@ def on_event(event):
             )  # Remove the timer when streaming stops
             update_stream_time()  # Update the stream time one last time
             save_stream_time()  # Save final time to JSON when streaming stops
-            obs.script_log(obs.LOG_INFO, "Timer removed for update_stream_time")
+            log_with_timestamp("Timer removed for update_stream_time")
 
             # Format and log the total streamed time
             formatted_time = format_time(total_streamed_hours)
-            obs.script_log(
-                obs.LOG_INFO,
-                f"Streaming stopped! Total streamed: {formatted_time}/{500}h.",
+            log_with_timestamp(
+                f"Streaming stopped! Total streamed: {formatted_time}/{500}h."
             )
 
 
@@ -125,6 +129,6 @@ def script_properties():
 # Called when the script is loaded
 def script_load(settings):
     load_stream_time()
-    obs.script_log(obs.LOG_INFO, "Stream Timer script loaded!")
+    log_with_timestamp("Stream Timer script loaded!")
     obs.obs_frontend_add_event_callback(on_event)
-    obs.script_log(obs.LOG_INFO, "Event callback added")
+    log_with_timestamp("Event callback added")
