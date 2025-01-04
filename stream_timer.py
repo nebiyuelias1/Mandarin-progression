@@ -22,10 +22,11 @@ def load_stream_time():
         with open(TIME_FILE, "r") as f:
             data = json.load(f)
             total_streamed_hours = data.get("currentHours", 0)
-            previous_total = total_streamed_hours  # Remember the previous total
+            previous_total = total_streamed_hours 
     except FileNotFoundError:
-        total_streamed_hours = 0
-        previous_total = 0
+        # shrow error if file not found
+        log_with_timestamp(f"File not found: {TIME_FILE}")
+        
 
 
 # Helper function to save time data to file
