@@ -97,9 +97,9 @@ def on_event(event):
             except Exception as e:
                 log_with_timestamp(f"Error removing timer: {e}")
             obs.timer_add(
-                update_stream_time, 10000
-            )  # Add a new timer to call update_stream_time every 10 seconds
-            log_with_timestamp("Timer added for update_stream_time every 10 seconds")
+                update_stream_time, 60000
+            )  # Add a new timer to call update_stream_time every minute
+            log_with_timestamp("Timer added for update_stream_time every minute")
 
     elif event == obs.OBS_FRONTEND_EVENT_STREAMING_STOPPED:
         log_with_timestamp("Detected Streaming Stopped")
