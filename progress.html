@@ -41,6 +41,7 @@
 </head>
 <body>
     <div>
+        <div style="text-align: center; margin-bottom: 12px;">Time spent streaming in 2025</div>
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
@@ -53,17 +54,14 @@
 
         // Function to format time in hours, minutes, and seconds
         function formatTime(hours) {
-            const h = Math.floor(hours);
-            const m = Math.floor((hours - h) * 60);
-            const s = Math.floor(((hours - h) * 60 - m) * 60);
-            return `${h}h ${m}m ${s}s`;
+            return Math.floor(hours);
         }
 
         // Function to update the progress bar
         function updateProgress(currentHours) {
             const percentage = (currentHours / totalHours) * 100;
             progressBar.style.width = percentage + "%";
-            progressText.textContent = `${formatTime(currentHours)} / ${totalHours}h`;
+            progressText.textContent = `${formatTime(currentHours)} / ${totalHours} hours`;
         }
 
         // Fetch the current streamed time every few seconds
@@ -77,8 +75,8 @@
             }
         }
 
-        // Update progress every 5 seconds
-        setInterval(fetchStreamTime, 5000);
+        // Update progress every minute
+        setInterval(fetchStreamTime, 60000);
         fetchStreamTime(); // Initial fetch
     </script>
 </body>
