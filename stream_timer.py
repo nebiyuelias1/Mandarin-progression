@@ -26,7 +26,7 @@ def load_stream_time():
     except FileNotFoundError:
         # shrow error if file not found
         log_with_timestamp(f"File not found: {TIME_FILE}")
-        
+
 
 
 # Helper function to save time data to file
@@ -76,15 +76,7 @@ def update_stream_time():
 def on_event(event):
     global is_streaming, stream_start_time, total_streamed_hours, last_update_time
 
-    # Map event numbers to names for better logging
-    event_names = {
-        obs.OBS_FRONTEND_EVENT_STREAMING_STARTING: "STREAMING_STARTING",
-        obs.OBS_FRONTEND_EVENT_STREAMING_STARTED: "STREAMING_STARTED",
-        obs.OBS_FRONTEND_EVENT_STREAMING_STOPPING: "STREAMING_STOPPING",
-        obs.OBS_FRONTEND_EVENT_STREAMING_STOPPED: "STREAMING_STOPPED",
-    }
-    event_name = event_names.get(event, str(event))
-    log_with_timestamp(f"Event detected: {event_name} ({event})")
+    log_with_timestamp(f"Event detected: {event}")
 
     if event == obs.OBS_FRONTEND_EVENT_STREAMING_STARTED:
         log_with_timestamp("Detected Streaming Started")
@@ -143,7 +135,6 @@ def script_properties():
 # Called when the script is loaded
 def script_load(settings):
     load_stream_time()
-    log_with_timestamp("Stream Timer script loaded!")
     obs.obs_frontend_add_event_callback(on_event)
     log_with_timestamp("Event callback added")
     # Try adding timer on script load
