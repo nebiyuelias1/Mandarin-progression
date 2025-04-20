@@ -1,0 +1,26 @@
+{
+  "name": "progress_bar_2025",
+  "version": "1.0.0",
+  "description": "How to use: - change the stream_time.json value every time I end my stream",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "deploy": "gh-pages -d out"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^4.4.9",
+    "next": "^15.3.1",
+    "react": "^19.1.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
