@@ -2,6 +2,33 @@ import fs from 'fs';
 import path from 'path';
 import { useState } from 'react';
 
+function YouTubeEmbed({ url }) {
+  if (!url) return null;
+
+  const videoId = url.split('/').pop();
+  const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+  return (
+    <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+      <iframe
+        src={embedUrl}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          borderRadius: '8px',
+        }}
+      ></iframe>
+    </div>
+  );
+}
+
+
 export async function getStaticProps() {
   const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
   const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
@@ -235,32 +262,8 @@ export default function Home({ sessions }) {
                                   <div style={{ fontWeight: 'bold' }}>{session.hours.toFixed(2)}h</div>
                                 </div>
                                 
-                                {session.youtubeLink && (
-                                  <div>
-                                    <a 
-                                      href={session.youtubeLink}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      style={{ 
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '8px',
-                                        padding: '8px 12px',
-                                        backgroundColor: '#ff0000',
-                                        color: 'white',
-                                        borderRadius: '4px',
-                                        textDecoration: 'none',
-                                        fontWeight: 'bold',
-                                        width: '100%'
-                                      }}
-                                    >
-                                      <span>▶</span>
-                                      <span>Watch Recording</span>
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
+                                <YouTubeEmbed url={session.youtubeLink} />
+                                </div>
                             ))}
                           </div>
                         )}
@@ -299,31 +302,9 @@ export default function Home({ sessions }) {
               <div style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
                 {session.started_time} - {session.time}
               </div>
-              
-              {session.youtube_link && (
-                <a 
-                  href={session.youtube_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    padding: '6px 10px',
-                    backgroundColor: '#ff0000',
-                    color: 'white',
-                    borderRadius: '4px',
-                    textDecoration: 'none',
-                    fontWeight: 'bold',
-                    fontSize: '14px'
-                  }}
-                >
-                  <span>▶</span>
-                  <span>Watch Recording</span>
-                </a>
-              )}
-            </div>
+              <YouTubeEmbed url={session.youtube_link} />
+
+              </div>
           ))}
       </div>
     </div>
