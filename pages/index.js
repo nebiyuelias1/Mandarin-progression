@@ -1,6 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { useState } from 'react';
+import { FaYoutube, FaTiktok, FaInstagram, FaTwitch } from 'react-icons/fa';
+
+
+function formatHoursToHM(hours) {
+  const totalMinutes = Math.round(hours * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return m === 0 ? `${h}h` : `${h}h${m.toString().padStart(2, '0')}`;
+}
+
 
 function YouTubeEmbed({ url }) {
   if (!url) return null;
@@ -36,15 +46,17 @@ export async function getStaticProps() {
   function csvToJson(csv) {
     const [header, ...rows] = csv.trim().split('\n');
     const keys = header.split(',');
-    
-    // Add youtube_link if it's not already in the header
-    const updatedKeys = keys.includes('youtube_link') ? keys : [...keys, 'youtube_link'];
-    
+  
     return rows.map(row => {
       const vals = row.split(',');
-      return Object.fromEntries(updatedKeys.map((k, i) => [k, vals[i] || '']));
+      const entry = {};
+      keys.forEach((key, idx) => {
+        entry[key] = vals[idx]?.trim() || '';
+      });
+      return entry;
     });
   }
+    
 
   return {
     props: {
@@ -101,7 +113,7 @@ export default function Home({ sessions }) {
         date,
         dayOfMonth: new Date(date).getDate(),
         ...processedByMonth[month].days[date]
-      })).sort((a, b) => new Date(a.date) - new Date(b.date))
+      })).sort((a, b) => new Date(b.date) - new Date(a.date))
     }))
     .sort((a, b) => new Date(`${b.month}-01`) - new Date(`${a.month}-01`));
   
@@ -133,7 +145,7 @@ export default function Home({ sessions }) {
   
   return (
     <div style={{ padding: '16px', fontFamily: 'sans-serif', maxWidth: '100%', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '24px', marginBottom: '12px' }}>Mandarin Live streams</h1>
+      <h1 style={{ fontSize: '24px', marginBottom: '12px' }}>Mandarin Live Streams</h1>
       
       <div style={{ 
         display: 'flex', 
@@ -152,7 +164,7 @@ export default function Home({ sessions }) {
           textAlign: 'center'
         }}>
           <div style={{ fontSize: '12px', color: '#555' }}>TOTAL HOURS</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{totalHours.toFixed(0)}</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{Math.round(totalHours)}</div>
         </div>
         
         <div style={{ 
@@ -168,6 +180,52 @@ export default function Home({ sessions }) {
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{totalSessions}</div>
         </div>
       </div>
+
+      <div style={{
+        display: 'flex',
+        gap: '24px',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '32px',
+        fontSize: '18px'
+      }}>
+        <a 
+          href="https://www.youtube.com/@bricelearnstuff" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ color: '#FF0000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <FaYoutube size={24} />
+        </a>
+
+        <a 
+          href="https://www.tiktok.com/@bricelearnstuff" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ color: '#000000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <FaTiktok size={24} />
+        </a>
+
+        <a 
+          href="https://www.instagram.com/bricelearnstuff" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ color: '#E1306C', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <FaInstagram size={24} />
+        </a>
+
+        <a 
+          href="https://www.twitch.tv/bricelearnstuff" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ color: '#6441a5', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <FaTwitch size={24} />
+        </a>
+      </div>
+
       
       <h2 style={{ fontSize: '20px', marginTop: '24px', marginBottom: '16px' }}>Study Activity</h2>
       
@@ -193,7 +251,7 @@ export default function Home({ sessions }) {
               >
                 <div style={{ fontWeight: 'bold' }}>{monthData.monthLabel}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>{monthData.totalHours.toFixed(1)} hours</span>
+                  <span>{Math.round(monthData.totalHours)} hours</span>
                   <span style={{ 
                     transform: isMonthExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s'
@@ -223,15 +281,38 @@ export default function Home({ sessions }) {
                             {day.dayOfMonth}
                           </div>
                           <div style={{ flex: 1, marginLeft: '8px', marginRight: '8px' }}>
-                            <div style={{ 
-                              height: '16px', 
+                          <div style={{ flex: 1, marginLeft: '8px', marginRight: '8px' }}>
+                          <div style={{
+                            position: 'relative',
+                            width: '100%',
+                            height: '20px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: '12px',
+                            backdropFilter: 'blur(6px)',
+                            WebkitBackdropFilter: 'blur(6px)',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.05) inset',
+                            overflow: 'hidden',
+                          }}>
+                            <div style={{
+                              height: '100%',
                               width: barWidth,
-                              backgroundColor: '#4aaf07',
-                              borderRadius: '3px',
-                            }}></div>
+                              background: 'linear-gradient(90deg, #4fc3f7, #1e88e5)',
+                              borderRadius: '12px',
+                              boxShadow: '0 0 8px #1e88e5cc',
+                              transition: 'width 0.6s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              paddingLeft: '12px',
+                              color: 'white',
+                              fontWeight: 'bold',
+                              fontSize: '12px',
+                            }}>
+                              {formatHoursToHM(day.totalHours)}
+                            </div>
+                          </div>
+                        </div>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>{day.totalHours.toFixed(1)}h</span>
                             <span style={{ 
                               fontSize: '10px',
                               transform: isDayExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -255,12 +336,6 @@ export default function Home({ sessions }) {
                                 flexDirection: 'column',
                                 gap: '8px'
                               }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#555' }}>
-                                  <div>
-                                    <span style={{ fontWeight: 'bold' }}>{session.startTime}</span> - {session.endTime}
-                                  </div>
-                                  <div style={{ fontWeight: 'bold' }}>{session.hours.toFixed(2)}h</div>
-                                </div>
                                 
                                 <YouTubeEmbed url={session.youtubeLink} />
                                 </div>
@@ -282,7 +357,7 @@ export default function Home({ sessions }) {
       <div>
         {sessions
           .sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time))
-          .slice(0, 5)
+          .slice(0, 3)
           .map((session, index) => (
             <div 
               key={index} 
@@ -296,12 +371,10 @@ export default function Home({ sessions }) {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <div style={{ fontWeight: 'bold' }}>{session.date}</div>
-                <div>{Number(session.hours).toFixed(2)}h</div>
+                <div>{formatHoursToHM(Number(session.hours))}</div>
               </div>
+
               
-              <div style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-                {session.started_time} - {session.time}
-              </div>
               <YouTubeEmbed url={session.youtube_link} />
 
               </div>
