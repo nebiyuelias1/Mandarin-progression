@@ -146,16 +146,43 @@
       "date": "2025-04-16",
       "activities": {
         "mandarin": "4h30",
-        "reading": "0h30"
+        "reading": "0h30",
+        "stretching": "0h30",
+        "DJ": "0h52",
+        "harmonica": "0h15"
       }
     },
     {
       "date": "2025-04-17",
       "activities": {
+        "mandarin":"5h",
+        "reading": "0h30",
+        "stretching":"0h40",
+        "harmonica":"0h30",
+        "DJ":"0h30"
       }
     },
     {
       "date": "2025-04-18",
+      "activities": {
+        "mandarin":"1h"
+      }
+    },
+    {
+      "date": "2025-04-19",
+      "activities": {
+        "mandarin":"2h15",
+        "harmonica":"0h35",
+        "DJ":"0h35"
+      }
+    },
+    {
+      "date": "2025-04-20",
+      "activities": {
+      }
+    },
+    {
+      "date": "2025-04-21",
       "activities": {
       }
     }
