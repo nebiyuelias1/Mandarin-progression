@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { useState } from 'react';
 import { FaYoutube, FaTiktok, FaInstagram, FaTwitch } from 'react-icons/fa';
 
@@ -38,31 +36,63 @@ function YouTubeEmbed({ url }) {
   );
 }
 
-
 export async function getStaticProps() {
-  const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
-  const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
+  let sessions;
 
-  function csvToJson(csv) {
-    const [header, ...rows] = csv.trim().split('\n');
-    const keys = header.split(',');
-  
-    return rows.map(row => {
-      const vals = row.split(',');
-      const entry = {};
-      keys.forEach((key, idx) => {
-        entry[key] = vals[idx]?.trim() || '';
-      });
-      return entry;
-    });
-  }
-    
-
-  return {
-    props: {
-      sessions: csvToJson(sessionsCsv)
+  try {
+    // For development: directly read from the filesystem
+    if (process.env.NODE_ENV === 'development') {
+      const fs = require('fs');
+      const path = require('path');
+      const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
+      const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
+      sessions = csvToJson(sessionsCsv);
+    } 
+    // For production: fetch the file from the deployed URL
+    else {
+      // Determine the base URL for GitHub Pages deployment
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+      const response = await fetch(`${basePath}/streaming_sessions.csv`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch CSV: ${response.status}`);
+      }
+      
+      const sessionsCsv = await response.text();
+      sessions = csvToJson(sessionsCsv);
     }
-  };
+
+    return {
+      props: {
+        sessions,
+      },
+      // Optionally revalidate the data after X seconds
+      revalidate: 3600, // Revalidate every hour
+    };
+  } catch (error) {
+    console.error('Error loading CSV data:', error);
+    return {
+      props: {
+        sessions: [],
+        error: 'Failed to load session data'
+      }
+    };
+  }
+}
+
+// Keep your existing csvToJson function
+function csvToJson(csv) {
+  const [header, ...rows] = csv.trim().split('\n');
+  const keys = header.split(',');
+
+  return rows.map(row => {
+    const vals = row.split(',');
+    const entry = {};
+    keys.forEach((key, idx) => {
+      entry[key] = vals[idx]?.trim() || '';
+    });
+    return entry;
+  });
 }
 
 export default function Home({ sessions }) {
