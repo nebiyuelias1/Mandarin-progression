@@ -54,7 +54,7 @@ for commit_line in commits:
         })
 
 # Write to CSV
-with open('streaming_sessions.csv', 'w', newline='') as f:
+with open('public/streaming_sessions.csv', 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=['date', 'time', 'before', 'after', 'hours', 'started_date', 'started_time'])
     writer.writeheader()
     writer.writerows(data)
@@ -86,7 +86,7 @@ hours = [date_hours[date] for date in complete_dates]
 commits = [len(date_sessions[date]) for date in complete_dates]  # Fixed: use length of sessions list
 
 # Write daily summary to CSV
-with open('daily_summary.csv', 'w', newline='') as f:
+with open('public/daily_summary.csv', 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=['date', 'hours', 'commits'])
     writer.writeheader()
     for date, hour, commit in zip(complete_dates, hours, commits):

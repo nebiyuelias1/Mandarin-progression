@@ -7,8 +7,8 @@ import { Chart, CategoryScale, LinearScale, BarElement, LineElement, PointElemen
 Chart.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend);
 
 export async function getStaticProps() {
-  const dailyPath = path.join(process.cwd(), 'daily_summary.csv');
-  const sessionsPath = path.join(process.cwd(), 'streaming_sessions.csv');
+  const dailyPath = path.join(process.cwd(), 'public', 'daily_summary.csv');
+  const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
   const dailyCsv = fs.readFileSync(dailyPath, 'utf8');
   const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
 
