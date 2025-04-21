@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { FaYoutube, FaTiktok, FaInstagram, FaTwitch } from 'react-icons/fa';
+import Head from 'next/head';
+
 
 
 function formatHoursToHM(hours) {
@@ -155,90 +157,133 @@ export default function Home({ sessions }) {
   const toggleDay = (date) => {
     setExpandedDay(expandedDay === date ? null : date);
   };
+
+  const goalHours = 1000;
+  const progressPercentage = Math.min(Math.round((totalHours / goalHours) * 100), 100);
+  const averageHoursPerDay = activeDays > 0 ? (totalHours / activeDays).toFixed(1) : 0;
   
   return (
     <div style={{ padding: '16px', fontFamily: 'sans-serif', maxWidth: '100%', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '24px', marginBottom: '12px' }}>Mandarin Live Streams</h1>
+<div style={{ 
+  textAlign: 'center', 
+  marginBottom: '32px',
+  padding: '24px 0',
+  background: 'linear-gradient(135deg, #f5fbff 0%, #e0f0ff 100%)',
+  borderRadius: '12px',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+}}>
+  <h1 style={{ 
+    fontSize: '2.5rem',
+    fontWeight: '700',
+    color: '#1a73e8',
+    marginBottom: '16px',
+    textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+    letterSpacing: '0.5px'
+  }}>
+    Mandarin Live Streams
+  </h1>
+  
+  <div style={{
+    display: 'flex',
+    gap: '20px',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}>
+    <a href="https://www.youtube.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer">
+      <FaYoutube size={28} color="#FF0000" style={{ transition: 'transform 0.2s' }} />
+    </a>
+    <a href="https://www.tiktok.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer">
+      <FaTiktok size={28} color="#000000" style={{ transition: 'transform 0.2s' }} />
+    </a>
+    <a href="https://www.instagram.com/bricelearnstuff" target="_blank" rel="noopener noreferrer">
+      <FaInstagram size={28} color="#E1306C" style={{ transition: 'transform 0.2s' }} />
+    </a>
+    <a href="https://www.twitch.tv/bricelearnstuff" target="_blank" rel="noopener noreferrer">
+      <FaTwitch size={28} color="#6441a5" style={{ transition: 'transform 0.2s' }} />
+    </a>
+  </div>
+</div>
+
+      <h2 style={{ fontSize: '20px', marginTop: '24px', marginBottom: '16px' }}>Statistics</h2>
       
       <div style={{ 
-        display: 'flex', 
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: '12px', 
-        flexWrap: 'wrap', 
         marginBottom: '24px',
-        justifyContent: 'space-between'
       }}>
+        {/* Total Hours Card */}
         <div style={{ 
-          padding: '12px', 
-          backgroundColor: '#f5fbff', 
-          borderRadius: '8px', 
+          backgroundColor: '#f5fbff',
+          padding: '16px',
+          borderRadius: '8px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          flex: '1',
-          minWidth: '100px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '12px', color: '#555' }}>TOTAL HOURS</div>
+          <div style={{ fontSize: '12px', color: '#555' }}>TOTAL HOURS in 2025</div>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{Math.round(totalHours)}</div>
+          <div style={{ marginTop: '8px', fontSize: '12px', color: '#555' }}>
+            Goal: 1000 hours
+          </div>
+          <div style={{
+            height: '6px',
+            backgroundColor: '#e0e0e0',
+            borderRadius: '3px',
+            marginTop: '4px',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              height: '100%',
+              width: `${progressPercentage}%`,
+              backgroundColor: '#1a73e8',
+              borderRadius: '3px',
+              transition: 'width 0.5s ease'
+            }}></div>
+          </div>
+          <div style={{ fontSize: '12px', color: '#1a73e8', marginTop: '4px' }}>
+            {progressPercentage}% completed
+          </div>
         </div>
-        
+
+        {/* Streams Card */}
         <div style={{ 
-          padding: '12px', 
-          backgroundColor: '#f5fbff', 
-          borderRadius: '8px', 
+          backgroundColor: '#f5fbff',
+          padding: '16px',
+          borderRadius: '8px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          flex: '1',
-          minWidth: '100px',
           textAlign: 'center'
         }}>
           <div style={{ fontSize: '12px', color: '#555' }}>STREAMS</div>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{totalSessions}</div>
         </div>
+
+        {/* Active Days Card */}
+        <div style={{ 
+          backgroundColor: '#f5fbff',
+          padding: '16px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '12px', color: '#555' }}>ACTIVE DAYS</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{activeDays}</div>
+        </div>
+
+        {/* Avg Hours/Day Card */}
+        <div style={{ 
+          backgroundColor: '#f5fbff',
+          padding: '16px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '12px', color: '#555' }}>AVG HOURS/DAY</div>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{formatHoursToHM(averageHoursPerDay)}</div>
+          <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>
+          </div>
+        </div>
       </div>
-
-      <div style={{
-        display: 'flex',
-        gap: '24px',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: '32px',
-        fontSize: '18px'
-      }}>
-        <a 
-          href="https://www.youtube.com/@bricelearnstuff" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ color: '#FF0000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <FaYoutube size={24} />
-        </a>
-
-        <a 
-          href="https://www.tiktok.com/@bricelearnstuff" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ color: '#000000', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <FaTiktok size={24} />
-        </a>
-
-        <a 
-          href="https://www.instagram.com/bricelearnstuff" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ color: '#E1306C', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <FaInstagram size={24} />
-        </a>
-
-        <a 
-          href="https://www.twitch.tv/bricelearnstuff" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ color: '#6441a5', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <FaTwitch size={24} />
-        </a>
-      </div>
-
+      
       
       <h2 style={{ fontSize: '20px', marginTop: '24px', marginBottom: '16px' }}>Study Activity</h2>
       
@@ -393,6 +438,7 @@ export default function Home({ sessions }) {
               </div>
           ))}
       </div>
+
     </div>
   );
 }
