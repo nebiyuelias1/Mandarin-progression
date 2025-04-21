@@ -50,14 +50,39 @@ for commit_line in commits:
             'after': after_value,
             'hours': hours,
             'started_date': started_time.strftime('%Y-%m-%d'),
-            'started_time': started_time.strftime('%H:%M:%S')
+            'started_time': started_time.strftime('%H:%M:%S'),
+            'youtube_link':'',
+            'stream_number':''
         })
 
-# Write to CSV
-with open('public/streaming_sessions.csv', 'w', newline='') as f:
-    writer = csv.DictWriter(f, fieldnames=['date', 'time', 'before', 'after', 'hours', 'started_date', 'started_time'])
+# Path to the CSV file
+csv_path = 'public/streaming_sessions.csv'
+
+# Read existing data from CSV (if it exists)
+existing_data = []
+existing_entries = set()
+with open(csv_path, 'r', newline='') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        existing_data.append(row)
+        # Create a unique identifier for each entry (date + time combination)
+        existing_entries.add((row['date'], row['time']))
+
+# Filter out entries that already exist in the CSV
+new_data = [entry for entry in data if (entry['date'], entry['time']) not in existing_entries]
+
+# Combine existing and new data for sorting
+all_data = existing_data + new_data
+
+# Sort the combined data by date and time in descending order (latest first)
+all_data.sort(key=lambda x: (x['date'], x['time']), reverse=True)
+
+# Write the sorted data to the CSV file
+with open(csv_path, 'w', newline='') as f:
+    writer = csv.DictWriter(f, fieldnames=['date', 'time', 'before', 'after', 'hours', 'started_date', 'started_time', 'youtube_link', 'stream_number'])
     writer.writeheader()
-    writer.writerows(data)
+    writer.writerows(all_data)
+
 
 # Create visualization
 date_hours = defaultdict(float)
