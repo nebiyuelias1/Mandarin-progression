@@ -3,16 +3,14 @@
   "version": "1.0.0",
   "description": "How to use: - change the stream_time.json value every time I end my stream",
   "main": "index.js",
-  "homepage": "https://github.com/BriceChivu/Mandarin-progression",
+  "homepage": "https://bricechivu.github.io/Mandarin-progression",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "deploy": "npm run build && touch ./out/.nojekyll && gh-pages -d out"
   },
   "keywords": [],
   "author": "",
@@ -20,12 +18,14 @@
   "dependencies": {
     "chart.js": "^4.4.9",
     "next": "^15.3.1",
+    "papaparse": "^5.5.2",
     "react": "^19.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^6.3.0",
+    "webpack": "^5.99.6"
   }
 }

@@ -40,27 +40,12 @@ export async function getStaticProps() {
   let sessions;
 
   try {
-    // For development: directly read from the filesystem
-    if (process.env.NODE_ENV === 'development') {
-      const fs = require('fs');
-      const path = require('path');
-      const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
-      const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
-      sessions = csvToJson(sessionsCsv);
-    } 
-    // For production: fetch the file from the deployed URL
-    else {
-      // Determine the base URL for GitHub Pages deployment
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-      const response = await fetch(`${basePath}/streaming_sessions.csv`);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch CSV: ${response.status}`);
-      }
-      
-      const sessionsCsv = await response.text();
-      sessions = csvToJson(sessionsCsv);
-    }
+    // Always read from filesystem during build
+    const fs = require('fs');
+    const path = require('path');
+    const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
+    const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
+    sessions = csvToJson(sessionsCsv);
 
     return {
       props: {

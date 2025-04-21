@@ -1,12 +1,17 @@
+// next.config.js
 const isProd = process.env.NODE_ENV === 'production';
-const nextConfig = {
-  reactStrictMode: true,
-  'output': 'export',
-  images: {
-    unoptimized: true, // Disable default image optimization
-  },
-  assetPrefix: isProd ? '/Mandarin-progression/' : '',
-  basePath: isProd ? '/Mandarin-progression' : ''
-};
+const repoName = 'Mandarin-progression';
+const basePath = isProd ? `/${repoName}` : '';
 
-export default nextConfig;
+module.exports = {
+  trailingSlash: true,
+  output: 'export',
+  basePath: basePath,
+  assetPrefix: basePath,
+  images: {
+    unoptimized: true,
+  },
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
+};
