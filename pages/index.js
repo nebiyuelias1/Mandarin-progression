@@ -66,8 +66,6 @@ export async function getStaticProps() {
       props: {
         sessions,
       },
-      // Optionally revalidate the data after X seconds
-      revalidate: 3600, // Revalidate every hour
     };
   } catch (error) {
     console.error('Error loading CSV data:', error);
