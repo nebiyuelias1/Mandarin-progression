@@ -1,6 +1,6 @@
+//index.js
 import { useState } from 'react';
 import { FaYoutube, FaTiktok, FaInstagram, FaTwitch } from 'react-icons/fa';
-import Head from 'next/head';
 
 
 
@@ -164,45 +164,46 @@ export default function Home({ sessions }) {
   
   return (
     <div style={{ padding: '16px', fontFamily: 'sans-serif', maxWidth: '100%', margin: '0 auto' }}>
-<div style={{ 
-  textAlign: 'center', 
-  marginBottom: '32px',
-  padding: '24px 0',
-  background: 'linear-gradient(135deg, #f5fbff 0%, #e0f0ff 100%)',
-  borderRadius: '12px',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
-}}>
-  <h1 style={{ 
-    fontSize: '2.5rem',
-    fontWeight: '700',
-    color: '#1a73e8',
-    marginBottom: '16px',
-    textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
-    letterSpacing: '0.5px'
-  }}>
-    Mandarin Live Streams
-  </h1>
-  
-  <div style={{
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }}>
-    <a href="https://www.youtube.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer">
-      <FaYoutube size={28} color="#FF0000" style={{ transition: 'transform 0.2s' }} />
-    </a>
-    <a href="https://www.tiktok.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer">
-      <FaTiktok size={28} color="#000000" style={{ transition: 'transform 0.2s' }} />
-    </a>
-    <a href="https://www.instagram.com/bricelearnstuff" target="_blank" rel="noopener noreferrer">
-      <FaInstagram size={28} color="#E1306C" style={{ transition: 'transform 0.2s' }} />
-    </a>
-    <a href="https://www.twitch.tv/bricelearnstuff" target="_blank" rel="noopener noreferrer">
-      <FaTwitch size={28} color="#6441a5" style={{ transition: 'transform 0.2s' }} />
-    </a>
-  </div>
-</div>
+
+      <div style={{ 
+        textAlign: 'center', 
+        marginBottom: '32px',
+        padding: '24px 0',
+        background: 'linear-gradient(135deg, #f5fbff 0%, #e0f0ff 100%)',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+      }}>
+        <h1 style={{ 
+          fontSize: '2.5rem',
+          fontWeight: '700',
+          color: '#1a73e8',
+          marginBottom: '16px',
+          textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+          letterSpacing: '0.5px'
+        }}>
+          Mandarin Live Streams
+        </h1>
+        
+        <div style={{
+          display: 'flex',
+          gap: '20px',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <a href="https://www.youtube.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+            <FaYoutube size={28} color="#FF0000" style={{ transition: 'transform 0.2s' }} />
+          </a>
+          <a href="https://www.tiktok.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+            <FaTiktok size={28} color="#000000" style={{ transition: 'transform 0.2s' }} />
+          </a>
+          <a href="https://www.instagram.com/bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+            <FaInstagram size={28} color="#E1306C" style={{ transition: 'transform 0.2s' }} />
+          </a>
+          <a href="https://www.twitch.tv/bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+            <FaTwitch size={28} color="#6441a5" style={{ transition: 'transform 0.2s' }} />
+          </a>
+        </div>
+      </div>
 
       <h2 style={{ fontSize: '20px', marginTop: '24px', marginBottom: '16px' }}>Statistics</h2>
       

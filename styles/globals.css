@@ -1,0 +1,12 @@
+/*globals.css*/
+
+/* Social icon hover animation */
+.social-icon {
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    display: inline-block; /* Required for transform */
+  }
+  
+  .social-icon:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
