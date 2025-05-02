@@ -15,7 +15,22 @@ function formatHoursToHM(hours) {
 function YouTubeEmbed({ url }) {
   if (!url) return null;
 
-  const videoId = url.split('/').pop();
+  // Extract video ID from different types of YouTube URLs
+  const getYoutubeVideoId = (url) => {
+    // Handle live stream URLs
+    const liveRegExp = /youtube\.com\/live\/([^/?&]+)/;
+    const liveMatch = url.match(liveRegExp);
+    if (liveMatch) return liveMatch[1];
+
+    // Handle regular video URLs
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  const videoId = getYoutubeVideoId(url);
+  if (!videoId) return null;
+
   const embedUrl = `https://www.youtube.com/embed/${videoId}`;
 
   return (
@@ -222,30 +237,68 @@ export default function Home({ sessions }) {
           textAlign: 'center'
         }}>
           <div style={{ fontSize: '12px', color: '#555' }}>TOTAL HOURS in 2025</div>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>{Math.round(totalHours)}</div>
-          <div style={{ marginTop: '8px', fontSize: '12px', color: '#555' }}>
-            Goal: 1000 hours
-          </div>
-          <div style={{
-            height: '6px',
-            backgroundColor: '#e0e0e0',
-            borderRadius: '3px',
-            marginTop: '4px',
-            overflow: 'hidden'
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
           }}>
-            <div style={{
-              height: '100%',
-              width: `${progressPercentage}%`,
-              backgroundColor: '#1a73e8',
-              borderRadius: '3px',
-              transition: 'width 0.5s ease'
-            }}></div>
-          </div>
-          <div style={{ fontSize: '12px', color: '#1a73e8', marginTop: '4px' }}>
-            {progressPercentage}% completed
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a73e8' }}>
+              {Math.round(totalHours)}
+            </div>
+            <div style={{ fontSize: '14px', color: '#555' }}>
+              / {goalHours}
+            </div>
+            <div style={{ 
+              position: 'relative',
+              width: '24px',
+              height: '24px'
+            }}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                style={{
+                  transform: 'rotate(-90deg)'
+                }}
+              >
+                {/* Background circle */}
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#e0e0e0"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                {/* Progress circle */}
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="#1a73e8"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeDasharray={`${2 * Math.PI * 10}`}
+                  strokeDashoffset={`${2 * Math.PI * 10 * (1 - progressPercentage / 100)}`}
+                  style={{
+                    transition: 'stroke-dashoffset 0.5s ease'
+                  }}
+                />
+              </svg>
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontSize: '8px',
+                color: '#1a73e8'
+              }}>
+                {progressPercentage}%
+              </div>
+            </div>
           </div>
         </div>
-
         {/* Streams Card */}
         <div style={{ 
           backgroundColor: '#f5fbff',
