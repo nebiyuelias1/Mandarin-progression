@@ -19,7 +19,7 @@
             display: grid;
             grid-template-areas:
                 "yesterday bucket"
-                "runs bucket"
+                "runs music"
                 "cumsum cumsum";
             grid-template-columns: 330px 535px;
             grid-template-rows: 280px 185px 263px;
@@ -29,7 +29,6 @@
             height: 758px;
             width: 880px;
         }
-
         /* Common styles */
         h1 {
             font-size: 1.5em;
@@ -37,6 +36,35 @@
             font-weight: bold;
             padding-left: 16px;
             color: #000000;
+        }
+
+        /* Grid area assignments */
+        .music-section { grid-area: music; }
+
+        .music-container {
+            height: 185px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 40px;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        /* Music styles */
+        .music-entry {
+            font-size: 1.5em;
+            padding: 2px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            gap: 10px;
+            opacity: 1;
+            transform: none;
+        }
+
+        .song-title {
+            color: #f6c637;
+            font-weight: bold;
         }
 
         /* Container styling */
@@ -222,6 +250,13 @@
             </div>
         </div>
 
+        <div class="music-section">
+            <div class="music-container">
+                <h1>Music of the moment</h1>
+                <div id="musicContainer"></div>
+            </div>
+        </div>
+
         <div class="cumsum-section">
             <div class="chart-container">
                 <svg id="yearChart" width="860" height="223">
@@ -288,10 +323,6 @@
             }
         }
 
-        // ...existing code from runs_3420.html script...
-        
-        // ...existing code from cum_sum_3420.html script...
-        
         // Yesterday's activities functions
         function formatTime(hours) {
             const h = Math.floor(hours);
@@ -355,6 +386,36 @@
             }
         }
 
+        // Music data functions
+        async function loadMusicData() {
+            try {
+                const response = await fetch('public/music.json');
+                if (!response.ok) throw new Error('Failed to fetch music data');
+                const data = await response.json();
+                
+                const container = document.getElementById('musicContainer');
+                container.innerHTML = '';
+                
+                // Sort by date added in descending order and take only the latest entry
+                const latestTrack = data.sort((a, b) => 
+                    new Date(b['date added']) - new Date(a['date added'])
+                )[0];
+
+                if (latestTrack) {
+                    const div = document.createElement('div');
+                    div.className = 'music-entry';
+                    div.innerHTML = `
+                        <span class="song-title">${latestTrack.title}</span>
+                        <span>${latestTrack.artist}</span>
+                    `;
+                    container.appendChild(div);
+                }
+            } catch (error) {
+                console.error('Error loading music data:', error);
+                const container = document.getElementById('musicContainer');
+                container.innerHTML = '<div class="error-message">Failed to load music data</div>';
+            }
+        }
         // Cumulative sum chart functions
         const CHART_CONFIG = {
             left: 18,
@@ -510,6 +571,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             fetchRunningData();
+            loadMusicData();
             loadChartData();
             window.addEventListener('resize', loadChartData);
         });
