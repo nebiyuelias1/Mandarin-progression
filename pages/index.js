@@ -229,7 +229,7 @@ export default function Home({ sessions }) {
         marginBottom: '24px',
       }}>
         {/* Total Hours Card */}
-        <div style={{ 
+                <div style={{ 
           backgroundColor: '#f5fbff',
           padding: '16px',
           borderRadius: '8px',
@@ -248,54 +248,6 @@ export default function Home({ sessions }) {
             </div>
             <div style={{ fontSize: '14px', color: '#555' }}>
               / {goalHours}
-            </div>
-            <div style={{ 
-              position: 'relative',
-              width: '24px',
-              height: '24px'
-            }}>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                style={{
-                  transform: 'rotate(-90deg)'
-                }}
-              >
-                {/* Background circle */}
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="#e0e0e0"
-                  strokeWidth="2"
-                  fill="none"
-                />
-                {/* Progress circle */}
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="#1a73e8"
-                  strokeWidth="2"
-                  fill="none"
-                  strokeDasharray={`${2 * Math.PI * 10}`}
-                  strokeDashoffset={`${2 * Math.PI * 10 * (1 - progressPercentage / 100)}`}
-                  style={{
-                    transition: 'stroke-dashoffset 0.5s ease'
-                  }}
-                />
-              </svg>
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                fontSize: '8px',
-                color: '#1a73e8'
-              }}>
-                {progressPercentage}%
-              </div>
             </div>
           </div>
         </div>

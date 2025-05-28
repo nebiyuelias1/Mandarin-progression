@@ -338,6 +338,7 @@
     {
       "date": "2025-05-15",
       "activities": {
+        "mandarin": "2h"
       }
     },
     {
@@ -348,6 +349,21 @@
     },
     {
       "date": "2025-05-17",
+      "activities": {
+      }
+    },
+    {
+      "date": "2025-05-18",
+      "activities": {
+      }
+    },
+    {
+      "date": "2025-05-19",
+      "activities": {
+      }
+    },
+    {
+      "date": "2025-05-20",
       "activities": {
       }
     }
