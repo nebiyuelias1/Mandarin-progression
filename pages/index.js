@@ -155,8 +155,14 @@ export default function Home({ sessions }) {
   const [expandedMonth, setExpandedMonth] = useState(null);
   const [expandedDay, setExpandedDay] = useState(null);
   
-  const getMaxHoursInMonth = (days) => {
-    return Math.max(...days.map(day => day.totalHours), 3); // Minimum scale of 3
+  // Calculate global maximum hours across all days
+  const globalMaxHours = Math.max(
+    ...monthsData.flatMap(month => month.days.map(day => day.totalHours)),
+    3 // Minimum scale of 3
+  );
+  
+  const getMaxHoursInMonth = () => {
+    return globalMaxHours; // Now returns the global maximum instead of per-month maximum
   };
   
   const toggleMonth = (month) => {
