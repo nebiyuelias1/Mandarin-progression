@@ -184,7 +184,7 @@ for i, date in enumerate(complete_dates):
 # Configure x-axis with dates only
 ax = plt.gca()
 ax.set_xticks(range(len(complete_dates)))
-ax.set_xticklabels(date_labels, rotation=90, ha='center')  # Changed rotation to 90 and ha to center
+ax.set_xticklabels(date_labels, rotation=90, ha='center', fontsize=7)  # Added fontsize=8
 
 # Find the indices for first and last day of each month
 current_month = datetime.strptime(complete_dates[0], '%Y-%m-%d').month
@@ -198,15 +198,15 @@ for i, date in enumerate(complete_dates):
         month_center = (month_start_idx + (i - 1 if dt.month != current_month else i)) / 2
         month_name = datetime(year, current_month, 1).strftime('%B')
         plt.figtext(ax.get_position().x0 + (month_center / len(complete_dates)) * ax.get_position().width,
-                   0.08, month_name, ha='center', va='top')
+                   0.08, month_name, ha='center', va='top', fontsize=9)  # Added fontsize=9
         
         # Update for next month
         current_month = dt.month
         month_start_idx = i
         year = dt.year
 
-# Add year label at bottom
-plt.figtext(0.5, 0.02, year, ha='center', va='top')
+# Add year label at bottom with reduced font size
+plt.figtext(0.5, 0.02, year, ha='center', va='top', fontsize=10)  # Added fontsize=10
 
 plt.title('Streaming Hours per Day')
 plt.xlabel('')
