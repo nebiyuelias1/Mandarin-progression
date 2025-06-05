@@ -98,7 +98,7 @@
 
         async function loadData() {
             try {
-                const response = await fetch('daily_summary.csv');
+                const response = await fetch('../daily_summary.csv');
                 if (!response.ok) throw new Error('Failed to fetch data');
                 const rows = (await response.text()).trim().split('\n').slice(1);
                 drawChart(processData(rows));
