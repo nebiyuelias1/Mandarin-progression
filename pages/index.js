@@ -138,20 +138,19 @@ export default function Home({ sessions }) {
   // Convert to array and sort by month
   const monthsData = Object.keys(processedByMonth)
     .map(month => ({
+      // month is always derived from started_date (YYYY-MM)
       month,
-      monthLabel: new Date(`${month}-01`).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+      monthLabel: new Date(`${month}-01T00:00:00Z`).toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' }),
       ...processedByMonth[month],
       days: Object.keys(processedByMonth[month].days)
         .map(date => ({
           date,
           // Use the full date string for display
-          dayLabel: date, // <-- add this for display
+          dayLabel: date,
           ...processedByMonth[month].days[date]
         }))
-        // Sort by date string descending (latest first)
         .sort((a, b) => b.date.localeCompare(a.date))
     }))
-    // Sort months descending (latest first)
     .sort((a, b) => b.month.localeCompare(a.month));
   
   // Calculate overall metrics
@@ -434,7 +433,7 @@ export default function Home({ sessions }) {
       
       <div>
         {sessions
-          .sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time))
+          .sort((a, b) => new Date(b.started_date + ' ' + b.time) - new Date(a.started_date + ' ' + a.time))
           .slice(0, 3)
           .map((session, index) => (
             <div 
@@ -448,7 +447,7 @@ export default function Home({ sessions }) {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <div style={{ fontWeight: 'bold' }}>{session.date}</div>
+                <div style={{ fontWeight: 'bold' }}>{session.started_date}</div>
                 <div>{formatHoursToHM(Number(session.hours))}</div>
               </div>
 
