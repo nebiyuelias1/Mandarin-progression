@@ -57,12 +57,24 @@ export async function getStaticProps() {
   let sessions;
 
   try {
-    // Always read from filesystem during build
     const fs = require('fs');
     const path = require('path');
+    const Papa = require('papaparse');
     const sessionsPath = path.join(process.cwd(), 'public', 'streaming_sessions.csv');
     const sessionsCsv = fs.readFileSync(sessionsPath, 'utf8');
-    sessions = csvToJson(sessionsCsv);
+    const parsed = Papa.parse(sessionsCsv, { header: true, skipEmptyLines: true });
+
+    // Normalize all keys and values (trim whitespace, remove \r, etc)
+    sessions = parsed.data.map(row => {
+      const normalized = {};
+      Object.keys(row).forEach(key => {
+        const cleanKey = key.trim().replace(/\r/g, '');
+        let value = row[key];
+        if (typeof value === 'string') value = value.trim().replace(/\r/g, '');
+        normalized[cleanKey] = value;
+      });
+      return normalized;
+    });
 
     return {
       props: {
@@ -80,30 +92,20 @@ export async function getStaticProps() {
   }
 }
 
-// Keep your existing csvToJson function
-function csvToJson(csv) {
-  const [header, ...rows] = csv.trim().split('\n');
-  const keys = header.split(',');
-
-  return rows.map(row => {
-    const vals = row.split(',');
-    const entry = {};
-    keys.forEach((key, idx) => {
-      entry[key] = vals[idx]?.trim() || '';
-    });
-    return entry;
-  });
-}
-
 export default function Home({ sessions }) {
   // Process sessions data by month and date
   const processedByMonth = {};
-  
+
   sessions.forEach(session => {
-    const date = session.date;
-    const [year, month, day] = date.split('-');
+    // Use started_date for grouping
+    const startedDate = session.started_date;
+    // Defensive: ensure startedDate is valid and in YYYY-MM-DD format
+    if (!startedDate || !/^\d{4}-\d{2}-\d{2}$/.test(startedDate)) return;
+
+    const [year, month, day] = startedDate.split('-');
     const monthKey = `${year}-${month}`;
-    
+    const dateKey = `${year}-${month}-${day}`;
+
     // Initialize month data if it doesn't exist
     if (!processedByMonth[monthKey]) {
       processedByMonth[monthKey] = {
@@ -111,41 +113,46 @@ export default function Home({ sessions }) {
         days: {}
       };
     }
-    
+
     // Initialize day data if it doesn't exist
-    if (!processedByMonth[monthKey].days[date]) {
-      processedByMonth[monthKey].days[date] = {
+    if (!processedByMonth[monthKey].days[dateKey]) {
+      processedByMonth[monthKey].days[dateKey] = {
         totalHours: 0,
         sessions: []
       };
     }
-    
+
     const hours = Number(session.hours);
-    
+
     // Add session data
     processedByMonth[monthKey].totalHours += hours;
-    processedByMonth[monthKey].days[date].totalHours += hours;
-    processedByMonth[monthKey].days[date].sessions.push({
+    processedByMonth[monthKey].days[dateKey].totalHours += hours;
+    processedByMonth[monthKey].days[dateKey].sessions.push({
       startTime: session.started_time,
       endTime: session.time,
       hours: hours,
       youtubeLink: session.youtube_link || ""
     });
   });
-  
+
   // Convert to array and sort by month
   const monthsData = Object.keys(processedByMonth)
     .map(month => ({
       month,
       monthLabel: new Date(`${month}-01`).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
       ...processedByMonth[month],
-      days: Object.keys(processedByMonth[month].days).map(date => ({
-        date,
-        dayOfMonth: new Date(date).getDate(),
-        ...processedByMonth[month].days[date]
-      })).sort((a, b) => new Date(b.date) - new Date(a.date))
+      days: Object.keys(processedByMonth[month].days)
+        .map(date => ({
+          date,
+          // Use the full date string for display
+          dayLabel: date, // <-- add this for display
+          ...processedByMonth[month].days[date]
+        }))
+        // Sort by date string descending (latest first)
+        .sort((a, b) => b.date.localeCompare(a.date))
     }))
-    .sort((a, b) => new Date(`${b.month}-01`) - new Date(`${a.month}-01`));
+    // Sort months descending (latest first)
+    .sort((a, b) => b.month.localeCompare(a.month));
   
   // Calculate overall metrics
   const totalHours = sessions.reduce((sum, session) => sum + Number(session.hours), 0);
@@ -347,8 +354,9 @@ export default function Home({ sessions }) {
                             borderBottom: '1px solid #eee',
                           }}
                         >
-                          <div style={{ width: '40px', textAlign: 'center', fontWeight: 'bold', color: '#555' }}>
-                            {day.dayOfMonth}
+                          {/* Show full date string for clarity */}
+                          <div style={{ width: '100px', textAlign: 'center', fontWeight: 'bold', color: '#555' }}>
+                            {day.dayLabel}
                           </div>
                           <div style={{ flex: 1, marginLeft: '8px', marginRight: '8px' }}>
                           <div style={{ flex: 1, marginLeft: '8px', marginRight: '8px' }}>
