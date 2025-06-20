@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        <link rel="icon" href="/icon.png" type="image/png" />
+        <link rel="icon" href="/Mandarin-progression/icon.png" type="image/png" />
       </Head>
       <body>
         <Main />
