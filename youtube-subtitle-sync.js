@@ -241,6 +241,31 @@
         }
     });
   
+    // Cmd+C to copy current subtitle line
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') {
+        const video = document.querySelector('video');
+        if (!video || subtitles.length === 0) return;
+        const current = video.currentTime + syncOffset;
+        const idx = findCurrentSubtitleIndex(current);
+        if (idx >= 0) {
+          const text = subtitles[idx].text;
+          // Use Clipboard API if available
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text);
+          } else {
+            // fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+          }
+        }
+      }
+    });
+  
     // Drag and drop subtitle file
     document.body.addEventListener('dragover', (e) => {
       e.preventDefault();
