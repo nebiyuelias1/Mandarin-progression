@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2025 Mandarin Live Streaming Progress Chart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+            background: grey;
+            color: white;
+            font-family: 'Sora', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .chart-container {
+            padding: 20px;
+            box-sizing: border-box;
+            width: 880px;
+            height: 263px;
+        }
+        .progress-line {
+            fill: none;
+            stroke: #ffffff; /* green */
+            stroke-width: 5;
+        }
+        .target-line {
+            stroke: white;
+            stroke-width: 2;
+            stroke-dasharray: 4;
+        }
+        .line-label, .month-label {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.4em;
+            fill: white;
+        }
+        .month-label { text-anchor: start; }
+        .chart-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 1.5em;
+            fill: #fff; /* white */
+            text-anchor: start;
+            /* font-weight: bold; */
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <svg id="yearChart" width="860" height="223">
+            <text id="chartTitle" class="chart-title"></text>
+            <path id="progressLine" class="progress-line"></path>
+            <line id="targetLine" class="target-line"></line>
+            <text id="goalText" class="line-label">goal</text>
+            <text id="targetValue" class="line-label">1000 h</text>
+            <text id="currentValue" class="line-label"></text>
+            <g id="monthLabels"></g>
+        </svg>
+    </div>
+    <script>
+        const CHART_CONFIG = {
+            left: 18,
+            right: 32,
+            top: 55,
+            bottom: 20,
+            width: 880,
+            height: 200
+        };
+        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        async function loadChartData() {
+            try {
+                const response = await fetch('public/daily_summary.csv');
+                if (!response.ok) throw new Error('Failed to fetch data');
+                const rows = (await response.text()).trim().split('\n').slice(1);
+                drawChart(processData(rows));
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function processData(rows) {
+            const weekMap = new Map();
+            for (let i = 0; i < 53; i++) weekMap.set(i, 0);
+            rows.forEach(row => {
+                const [date, hours] = row.split(',');
+                if (!date || !hours) return;
+                const parsedDate = new Date(date);
+                if (isNaN(parsedDate.getTime())) return;
+                if (parsedDate.getFullYear() === 2024 && parsedDate.getMonth() === 11 && parsedDate.getDate() >= 30) {
+                    const weekKey = 0;
+                    weekMap.set(weekKey, weekMap.get(weekKey) + parseFloat(hours));
+                    return;
+                }
+                if (parsedDate.getFullYear() !== 2025) return;
+                const parsedHours = parseFloat(hours);
+                if (isNaN(parsedHours)) return;
+                const weekKey = getWeekNumber(parsedDate);
+                if (weekKey >= 0 && weekKey < 53) {
+                    weekMap.set(weekKey, weekMap.get(weekKey) + parsedHours);
+                }
+            });
+            let sum = 0;
+            return Array.from({ length: 52 }, (_, i) => {
+                sum += weekMap.get(i) || 0;
+                return sum;
+            });
+        }
+
+        function getWeekNumber(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            const firstWeekStart = new Date(2024, 11, 30);
+            const diff = d.getTime() - firstWeekStart.getTime();
+            return Math.floor(diff / (7 * 24 * 60 * 60 * 1000));
+        }
+
+        function drawChart(data) {
+            const currentWeek = getWeekNumber(new Date());
+            const currentData = data.slice(0, Math.min(currentWeek + 1, data.length));
+            drawTitle();
+            drawProgressLine(currentData);
+            drawTargetLine();
+            drawLabels(currentData);
+            drawMonthLabels();
+        }
+
+        function drawTitle() {
+            const title = document.getElementById('chartTitle');
+            title.setAttribute('x', CHART_CONFIG.left);
+            title.setAttribute('y', 25);
+            title.textContent = '2025 Mandarin live streaming progress';
+        }
+
+        function drawProgressLine(data) {
+            const points = data.map((value, index) => {
+                const x = CHART_CONFIG.left + (index * ((CHART_CONFIG.width - CHART_CONFIG.left - CHART_CONFIG.right) / 51));
+                const y = CHART_CONFIG.height - CHART_CONFIG.bottom - 
+                         (value * (CHART_CONFIG.height - CHART_CONFIG.top - CHART_CONFIG.bottom) / 1000);
+                return `${x},${y}`;
+            });
+            document.getElementById('progressLine')
+                .setAttribute('d', `M ${points.join(' L ')}`);
+        }
+
+        function drawTargetLine() {
+            const targetY = CHART_CONFIG.top;
+            const line = document.getElementById('targetLine');
+            line.setAttribute('x1', CHART_CONFIG.left + 53);
+            line.setAttribute('x2', CHART_CONFIG.width - CHART_CONFIG.right - 115);
+            line.setAttribute('y1', targetY);
+            line.setAttribute('y2', targetY);
+
+            const labels = {
+                goal: document.getElementById('goalText'),
+                value: document.getElementById('targetValue')
+            };
+            labels.goal.setAttribute('x', CHART_CONFIG.left);
+            labels.goal.setAttribute('y', targetY + 6);
+            labels.value.setAttribute('x', CHART_CONFIG.width - CHART_CONFIG.right - 109);
+            labels.value.setAttribute('y', targetY + 6);
+        }
+
+        function drawLabels(data) {
+            const currentTotal = data[data.length - 1] || 0;
+            if (currentTotal <= 0) return;
+            const x = CHART_CONFIG.left + ((data.length - 1) * ((CHART_CONFIG.width - CHART_CONFIG.left - CHART_CONFIG.right) / 51));
+            const y = CHART_CONFIG.height - CHART_CONFIG.bottom - 
+                     (currentTotal * (CHART_CONFIG.height - CHART_CONFIG.top - CHART_CONFIG.bottom) / 1000);
+            const label = document.getElementById('currentValue');
+            label.setAttribute('x', x + 10);
+            label.setAttribute('y', y + 6);
+            label.textContent = `${Math.round(currentTotal)}h`;
+        }
+
+        function drawMonthLabels() {
+            const container = document.getElementById('monthLabels');
+            container.innerHTML = '';
+            MONTHS.forEach((month, i) => {
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute('class', 'month-label');
+                text.setAttribute('x', CHART_CONFIG.left + (i * (CHART_CONFIG.width - CHART_CONFIG.left - CHART_CONFIG.right) / 12));
+                text.setAttribute('y', CHART_CONFIG.height+15);
+                text.textContent = month;
+                container.appendChild(text);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadChartData);
+    </script>
+</body>
+</html>
+</body>
+</html>
