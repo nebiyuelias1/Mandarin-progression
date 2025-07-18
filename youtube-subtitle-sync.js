@@ -140,7 +140,21 @@
     };
   
     const { subDiv, syncDisplay, updateDisplayValues } = createElements();
-  
+
+    // Track mouse over subtitle
+    let isMouseOverSubtitle = false;
+    let wasPausedByHover = false;
+    subDiv.addEventListener('mouseenter', () => { isMouseOverSubtitle = true; });
+    subDiv.addEventListener('mouseleave', () => {
+      isMouseOverSubtitle = false;
+      const video = document.querySelector('video');
+      // Resume only if video was paused by hover logic
+      if (video && video.paused && wasPausedByHover) {
+        video.play();
+        wasPausedByHover = false;
+      }
+    });
+
     // Dragging logic
     let isDragging = false, offsetX = 0, offsetY = 0;
     subDiv.addEventListener('mousedown', (e) => {
@@ -286,7 +300,7 @@
         alert('Please drop a valid .srt file.');
         return;
       }
-  
+
       const reader = new FileReader();
       reader.onload = function () {
         subtitles = parseSRT(reader.result);
@@ -296,7 +310,7 @@
         subDiv.style.top = '';
         subDiv.style.left = '0';
         subDiv.style.right = '0';
-  
+
         if (intervalID) clearInterval(intervalID);
         const video = document.querySelector('video');
         intervalID = setInterval(() => {
@@ -304,6 +318,26 @@
           currentSubtitleIndex = findCurrentSubtitleIndex(current);
           const line = currentSubtitleIndex >= 0 ? subtitles[currentSubtitleIndex] : null;
           subDiv.innerText = line ? line.text : '';
+
+          // --- Pause logic before moving to next subtitle if mouse is over subtitle ---
+          if (
+            isMouseOverSubtitle &&
+            video &&
+            !video.paused &&
+            currentSubtitleIndex >= 0 &&
+            currentSubtitleIndex < subtitles.length - 1
+          ) {
+            const nextSubtitle = subtitles[currentSubtitleIndex + 1];
+            // If we're within 0.15s of the end of the current subtitle, pause
+            if (
+              current >= subtitles[currentSubtitleIndex].end - 0.15 &&
+              current < nextSubtitle.start
+            ) {
+              video.pause();
+              wasPausedByHover = true;
+            }
+          }
+          // --------------------------------------------------------------------------
         }, 300);
       };
       reader.readAsText(file);
