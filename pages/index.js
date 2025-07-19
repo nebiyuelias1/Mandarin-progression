@@ -309,7 +309,8 @@ export default function Home({ sessions }) {
         {monthsData.map((monthData, monthIndex) => {
           const maxHours = getMaxHoursInMonth(monthData.days);
           const isMonthExpanded = expandedMonth === monthData.month;
-          
+          const isLatestMonth = monthIndex === 0; // latest month is first after sorting
+
           return (
             <div key={monthIndex} style={{ marginBottom: '16px' }}>
               <div 
@@ -325,7 +326,33 @@ export default function Home({ sessions }) {
                   alignItems: 'center',
                 }}
               >
-                <div style={{ fontWeight: 'bold' }}>{monthData.monthLabel}</div>
+                <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {monthData.monthLabel}
+                  {isLatestMonth && !isMonthExpanded && (
+                    <span style={{
+                      marginLeft: '8px',
+                      fontSize: '12px',
+                      color: '#1a73e8',
+                      fontWeight: 'bold',
+                      background: 'none',
+                      borderRadius: '6px',
+                      padding: '2px 8px',
+                      animation: 'blink 1s linear infinite'
+                    }}>
+                      click me
+                    </span>
+                  )}
+                  {/* Blinking animation keyframes */}
+                  <style>
+                    {`
+                      @keyframes blink {
+                        0% { opacity: 1; }
+                        50% { opacity: 0; }
+                        100% { opacity: 1; }
+                      }
+                    `}
+                  </style>
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span>{Math.round(monthData.totalHours)} hours</span>
                   <span style={{ 
@@ -340,7 +367,8 @@ export default function Home({ sessions }) {
                   {monthData.days.map((day, dayIndex) => {
                     const isDayExpanded = expandedDay === day.date;
                     const barWidth = `${(day.totalHours / maxHours) * 100}%`;
-                    
+                    const isLatestDay = dayIndex === 0; // first day is latest after sorting
+
                     return (
                       <div key={dayIndex} style={{ marginBottom: '8px' }}>
                         <div 
@@ -354,9 +382,35 @@ export default function Home({ sessions }) {
                           }}
                         >
                           {/* Show full date string for clarity */}
-                          <div style={{ width: '100px', textAlign: 'center', fontWeight: 'bold', color: '#555' }}>
+                          <div style={{ width: '100px', textAlign: 'center', fontWeight: 'bold', color: '#555', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             {day.dayLabel}
+                            {isLatestDay && !isDayExpanded && (
+                              <span style={{
+                                marginLeft: '6px',
+                                fontSize: '12px',
+                                color: '#1a73e8',
+                                fontWeight: 'bold',
+                                background: 'none',
+                                borderRadius: '6px',
+                                padding: '2px 8px',
+                                animation: 'blink 1s linear infinite'
+                              }}>
+                                click me
+                              </span>
+                            )}
                           </div>
+                          {/* Blinking animation keyframes (only once per render, safe to duplicate) */}
+                          {isLatestDay && (
+                            <style>
+                              {`
+                                @keyframes blink {
+                                  0% { opacity: 1; }
+                                  50% { opacity: 0; }
+                                  100% { opacity: 1; }
+                                }
+                              `}
+                            </style>
+                          )}
                           <div style={{ flex: 1, marginLeft: '8px', marginRight: '8px' }}>
                           <div style={{ flex: 1, marginLeft: '8px', marginRight: '8px' }}>
                           <div style={{
