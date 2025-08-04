@@ -1,6 +1,6 @@
 (() => {
     let syncOffset = 0;  // initial offset
-    let fontSize = 45;   // initial font size (changed from 20 to 45)
+    let fontSize = 35;   // initial font size (changed from 20 to 45)
     let subtitles = [];
     let intervalID;
     let currentSubtitleIndex = -1;  // Add this line
