@@ -1,8 +1,14 @@
 //index.js
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaYoutube, FaTiktok, FaInstagram, FaTwitch } from 'react-icons/fa';
 
-
+// Add this helper function for number of days in a month
+function getMonthDays(year, month) {
+  // month: "01".."12"
+  const m = Number(month);
+  const y = Number(year);
+  return new Date(y, m, 0).getDate();
+}
 
 function formatHoursToHM(hours) {
   const totalMinutes = Math.round(hours * 60);
@@ -50,6 +56,34 @@ function YouTubeEmbed({ url }) {
         }}
       ></iframe>
     </div>
+  );
+}
+
+// Minimalist BarChart for hours per day
+function BarChart({ data, maxValue, width, height = 24, color = "#1a73e8" }) {
+  if (!data || data.length === 0 || !maxValue) return null;
+  // Dynamically set width so each bar gets at least 4px
+  const barWidth = 4;
+  const chartWidth = data.length * barWidth;
+  return (
+    <svg width={chartWidth} height={height} style={{ display: 'block' }}>
+      {data.map((v, i) => {
+        const barHeight = Math.round((v / maxValue) * (height - 4));
+        return (
+          <rect
+            key={i}
+            x={i * barWidth + 1}
+            y={height - barHeight - 2}
+            width={barWidth - 2}
+            height={barHeight}
+            fill={color}
+            rx="2"
+            ry="2"
+            style={{ opacity: 0.85 }}
+          />
+        );
+      })}
+    </svg>
   );
 }
 
@@ -160,6 +194,19 @@ export default function Home({ sessions }) {
   
   const [expandedMonth, setExpandedMonth] = useState(null);
   const [expandedDay, setExpandedDay] = useState(null);
+
+  // Store refs for each day
+  const dayRefs = useRef({});
+
+  // Smooth scroll to expanded day
+  useEffect(() => {
+    if (expandedDay && dayRefs.current[expandedDay]) {
+      // Delay scroll to ensure expanded content is rendered
+      setTimeout(() => {
+        dayRefs.current[expandedDay].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 120); // 120ms is usually enough for DOM update
+    }
+  }, [expandedDay]);
   
   // Calculate global maximum hours across all days
   const globalMaxHours = Math.max(
@@ -198,15 +245,48 @@ export default function Home({ sessions }) {
         padding: '24px 0',
         background: 'linear-gradient(135deg, #f5fbff 0%, #e0f0ff 100%)',
         borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+        position: 'relative', // <-- add for positioning favicon
+        maxWidth: '100%',
+        overflow: 'hidden', // <-- ensure icon doesn't overflow
+        minHeight: '120px', // <-- ensure enough height for icon
       }}>
+        {/* Favicon behind the title */}
+        <div style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%', // center vertically
+          transform: 'translate(-50%, -50%)', // center both axes
+          zIndex: 0,
+          opacity: 0.18,
+          filter: 'blur(2px)',
+          width: '320px',
+          height: '320px',
+          pointerEvents: 'none',
+          maxWidth: 'none',
+          maxHeight: 'none',
+        }}>
+          <img 
+            src="/Mandarin-progression/icon.png" 
+            alt="Favicon" 
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              borderRadius: '50%',
+              boxShadow: '0 20px 12px rgba(0,0,0,0.10)'
+            }}
+          />
+        </div>
         <h1 style={{ 
           fontSize: '2.5rem',
           fontWeight: '700',
           color: '#1a73e8',
           marginBottom: '16px',
           textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
-          letterSpacing: '0.5px'
+          letterSpacing: '0.5px',
+          position: 'relative',
+          zIndex: 1 // <-- ensure text is above favicon
         }}>
           Mandarin Live Streams
         </h1>
@@ -311,6 +391,21 @@ export default function Home({ sessions }) {
           const isMonthExpanded = expandedMonth === monthData.month;
           const isLatestMonth = monthIndex === 0; // latest month is first after sorting
 
+          // Fill missing days with 0 hours
+          const [year, month] = monthData.month.split('-');
+          const numDays = getMonthDays(year, month);
+          // Build a map for quick lookup
+          const dayMap = Object.fromEntries(
+            monthData.days.map(day => [day.date, day.totalHours])
+          );
+          // Generate all days for the month in YYYY-MM-DD format
+          const allDays = Array.from({ length: numDays }, (_, i) => {
+            const dayStr = String(i + 1).padStart(2, '0');
+            return `${year}-${month}-${dayStr}`;
+          });
+          // Bar chart data: hours per day, oldest to newest, including 0s
+          const barChartData = allDays.map(date => dayMap[date] || 0);
+
           return (
             <div key={monthIndex} style={{ marginBottom: '16px' }}>
               <div 
@@ -328,6 +423,10 @@ export default function Home({ sessions }) {
               >
                 <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {monthData.monthLabel}
+                  {/* Minimalist bar chart for hours per day */}
+                  <span style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}>
+                    <BarChart data={barChartData} maxValue={globalMaxHours} />
+                  </span>
                   {isLatestMonth && !isMonthExpanded && (
                     <span style={{
                       marginLeft: '8px',
@@ -370,7 +469,11 @@ export default function Home({ sessions }) {
                     const isLatestDay = dayIndex === 0; // first day is latest after sorting
 
                     return (
-                      <div key={dayIndex} style={{ marginBottom: '8px' }}>
+                      <div
+                        key={dayIndex}
+                        style={{ marginBottom: '8px' }}
+                        ref={el => dayRefs.current[day.date] = el}
+                      >
                         <div 
                           onClick={() => toggleDay(day.date)}
                           style={{ 
