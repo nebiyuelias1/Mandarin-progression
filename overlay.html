@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OBS Overlay</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent; /* OBS needs transparency */
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+    iframe {
+      border: none;
+      position: absolute;
+    }
+
+    /* Example placements (tweak to your liking) */
+    #alerts { top: 50px; left: 50px; width: 400px; height: 200px; }
+    #progress { top: 50px; right: 50px; width: 600px; height: 250px; transform: scale(0.5); transform-origin: top right; }
+    #emoji { bottom: 200px; left: 50px; width: 600px; height: 300px; }
+    #chat { bottom: 50px; right: 50px; width: 500px; height: 400px; }
+    #commands { bottom: 50px; left: 700px; width: 400px; height: 200px; }
+  </style>
+</head>
+<body>
+  <!-- Replace src="" with your real widget URLs -->
+  <iframe id="alerts" src="https://botrix.live/alerts?bid=5zroDuitucQSG0LTPsOQ6g"></iframe>
+  <iframe id="progress" src="chart_only.html"></iframe>
+  <iframe id="emoji" src="https://beta.socialstream.ninja/emotes.html?session=V9F4gAVgmn&showtime=20000&scale=1.5"></iframe>
+  <iframe id="chat" src="https://socialstream.ninja/dock.html?session=V9F4gAVgmn&shortlink&compact&scale=1&hideshadow&nobadges&trimname=20&color&transparent&bubble&nooutline&showtime=200000"></iframe>
+  <iframe id="commands" src="https://beta.socialstream.ninja/gif.html?session=V9F4gAVgmn&showtime=10000"></iframe>
+</body>
+</html>
