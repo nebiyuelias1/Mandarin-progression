@@ -96,7 +96,7 @@ for session in reversed(data):  # Reverse the data to process oldest sessions fi
 # Get first and last dates
 all_dates = sorted(date_hours.keys())
 start_date = datetime.strptime(all_dates[0], '%Y-%m-%d')
-end_date = datetime.strptime(all_dates[-1], '%Y-%m-%d')
+end_date = datetime(2025, 12, 31)  # Fixed end date of December 31, 2025
 
 # Generate all dates in range
 current_date = start_date
@@ -146,7 +146,7 @@ print(f"{'Avg/Active:':<12} {avg_hours_per_active_day:>8.2f}")
 print()
 
 # Create the bar chart
-plt.figure(figsize=(15, 6))
+plt.figure(figsize=(35, 6))  # Changed width from 20 to 25
 
 # Define colors for each month
 month_colors = {
@@ -184,7 +184,8 @@ for i, date in enumerate(complete_dates):
 # Configure x-axis with dates only
 ax = plt.gca()
 ax.set_xticks(range(len(complete_dates)))
-ax.set_xticklabels(date_labels, rotation=90, ha='center', fontsize=7)  # Added fontsize=8
+ax.set_xticklabels(date_labels, rotation=90, ha='center', fontsize=7)
+ax.set_xlim(-0.6, len(complete_dates) - 0.4)  # Adjusted limits to create more space
 
 # Find the indices for first and last day of each month
 current_month = datetime.strptime(complete_dates[0], '%Y-%m-%d').month
@@ -198,17 +199,14 @@ for i, date in enumerate(complete_dates):
         month_center = (month_start_idx + (i - 1 if dt.month != current_month else i)) / 2
         month_name = datetime(year, current_month, 1).strftime('%B')
         plt.figtext(ax.get_position().x0 + (month_center / len(complete_dates)) * ax.get_position().width,
-                   0.08, month_name, ha='center', va='top', fontsize=9)  # Added fontsize=9
+                   0.15, month_name, ha='center', va='top', fontsize=9)  # Changed y-position from 0.08 to 0.15
         
         # Update for next month
         current_month = dt.month
         month_start_idx = i
         year = dt.year
 
-# Add year label at bottom with reduced font size
-plt.figtext(0.5, 0.02, year, ha='center', va='top', fontsize=10)  # Added fontsize=10
-
-plt.title('Streaming Hours per Day')
+plt.title('Streaming Hours per Day in 2025')
 plt.xlabel('')
 plt.ylabel('Hours')
 
@@ -217,6 +215,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.gca().set_axisbelow(True)
 
 # Adjust layout with more bottom margin for month and year labels
-plt.subplots_adjust(bottom=0.35)  # Increased bottom margin to accommodate vertical dates
+plt.subplots_adjust(bottom=0.25)
 plt.savefig('progress_chart.png', dpi=300, bbox_inches='tight')
 plt.close()
