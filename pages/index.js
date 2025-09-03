@@ -1,6 +1,7 @@
 //index.js
 import { useState, useRef, useEffect } from 'react';
 import { FaYoutube, FaTiktok, FaInstagram, FaTwitch } from 'react-icons/fa';
+import Head from 'next/head'; 
 
 // Add this helper function for number of days in a month
 function getMonthDays(year, month) {
@@ -237,6 +238,11 @@ export default function Home({ sessions }) {
   const averageHoursPerDay = activeDays > 0 ? (totalHours / activeDays).toFixed(1) : 0;
   
   return (
+    <>
+    <Head>
+      <title>BriceLearnStuff | Mandarin Live Streams</title>
+      <meta name="description" content="A brief description of your page for search engines." />
+    </Head>
     <div style={{ padding: '16px', fontFamily: 'sans-serif', maxWidth: '100%', margin: '0 auto' }}>
 
       <div style={{ 
@@ -616,5 +622,6 @@ export default function Home({ sessions }) {
       </div>
 
     </div>
+    </>
   );
 }
