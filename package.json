@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "How to use: - change the stream_time.json value every time I end my stream",
   "main": "index.js",
-  "homepage": "https://bricechivu.github.io/Mandarin-progression",
+  "homepage": "https://nebiyuelias1.github.io/Mandarin-progression",
   "private": true,
   "scripts": {
     "dev": "next dev",
