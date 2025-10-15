@@ -240,7 +240,7 @@ export default function Home({ sessions }) {
   return (
     <>
     <Head>
-      <title>BriceLearnStuff | Mandarin Live Streams</title>
+      <title>NebaLearnsStuff | Mandarin Live Streams</title>
       <meta name="description" content="A brief description of your page for search engines." />
     </Head>
     <div style={{ padding: '16px', fontFamily: 'sans-serif', maxWidth: '100%', margin: '0 auto' }}>
@@ -303,18 +303,18 @@ export default function Home({ sessions }) {
           justifyContent: 'center',
           alignItems: 'center'
         }}>
-          <a href="https://www.youtube.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+          <a href="https://www.youtube.com/@nebiyuelias1" target="_blank" rel="noopener noreferrer" className="social-icon" >
             <FaYoutube size={28} color="#FF0000" style={{ transition: 'transform 0.2s' }} />
           </a>
-          <a href="https://www.tiktok.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+          {/* <a href="https://www.tiktok.com/@bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
             <FaTiktok size={28} color="#000000" style={{ transition: 'transform 0.2s' }} />
-          </a>
-          <a href="https://www.instagram.com/bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+          </a> */}
+          <a href="https://www.instagram.com/nebiyuelias1/" target="_blank" rel="noopener noreferrer" className="social-icon" >
             <FaInstagram size={28} color="#E1306C" style={{ transition: 'transform 0.2s' }} />
           </a>
-          <a href="https://www.twitch.tv/bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
+          {/* <a href="https://www.twitch.tv/bricelearnstuff" target="_blank" rel="noopener noreferrer" className="social-icon" >
             <FaTwitch size={28} color="#6441a5" style={{ transition: 'transform 0.2s' }} />
-          </a>
+          </a> */}
         </div>
       </div>
 
