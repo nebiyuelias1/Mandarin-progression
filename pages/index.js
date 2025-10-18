@@ -622,6 +622,15 @@ export default function Home({ sessions }) {
       </div>
 
     </div>
+    <div style={{ textAlign: 'center', marginTop: '28px', marginBottom: '40px', color: '#666' }}>
+      <div style={{ fontSize: '13px' }}>
+        Original design and idea by{' '}
+        <a href="https://bricechivu.github.io/Mandarin-progression/" target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8', fontWeight: '600' }}>
+          Brice from BriceLearnStuff
+        </a>
+        . Thanks for the inspiration.
+      </div>
+    </div>
     </>
   );
 }
