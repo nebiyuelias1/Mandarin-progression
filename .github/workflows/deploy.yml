@@ -21,14 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Configure git identity for gh-pages
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # gh-pages expects GH_TOKEN for non-interactive pushes over HTTPS
-          GH_PAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run deploy
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          npm run deploy
