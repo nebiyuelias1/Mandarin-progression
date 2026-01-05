@@ -1,7 +1,5 @@
 // next.config.js
-const isProd = process.env.NODE_ENV === 'production';
-const repoName = 'Mandarin-progression';
-const basePath = isProd ? `/${repoName}` : '';
+const basePath = '';
 
 module.exports = {
   trailingSlash: true,
