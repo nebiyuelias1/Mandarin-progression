@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Load environment variables from .env if present
 try {
@@ -218,6 +219,16 @@ async function main() {
   fs.appendFileSync(csvPath, newLine, 'utf8');
   console.log('Appended new row:');
   console.log(newLine);
+
+  try {
+    console.log('Staging, committing, and pushing changes...');
+    execSync(`git add "${csvPath}"`, { stdio: 'inherit' });
+    execSync(`git commit -m "Record stream ${streamNumber}"`, { stdio: 'inherit' });
+    execSync('git push', { stdio: 'inherit' });
+    console.log('Git operations successful.');
+  } catch (error) {
+    console.error('Git operations failed:', error.message);
+  }
 }
 
 // Polyfill fetch for older Node versions
